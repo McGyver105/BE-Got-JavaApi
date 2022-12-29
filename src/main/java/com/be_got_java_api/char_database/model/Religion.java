@@ -1,7 +1,9 @@
 package com.be_got_java_api.char_database.model;
 
+import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
+@Entity
 public class Religion {
     @Id
     private String religionName;
