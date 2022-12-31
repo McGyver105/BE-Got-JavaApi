@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,19 +38,36 @@ public class HouseControllerTest {
     @MockBean
     HouseRespository houseRespository;
 
-    @Test
-    public void testGetAllHouses() throws Exception {
-        House house1 = new House();
+    private House house1 = new House();
+    private House house2 = new House();
+    private House house3 = new House();
+
+    @BeforeEach
+    void houseSetup() {
         house1.setId(1L);
         house1.setHousename("Stark");
-
-        House house2 = new House();
+        
         house2.setId(2L);
         house2.setHousename("Lannister");
-
-        House house3 = new House();
+        
         house3.setId(3L);
         house3.setHousename("Baratheon");
+    }
+
+    @AfterEach
+    void houseTeardown() {
+        house1.setId(null);
+        house1.setHousename(null);
+        
+        house2.setId(null);
+        house2.setHousename(null);
+        
+        house3.setId(null);
+        house3.setHousename(null);
+    }
+
+    @Test
+    public void testGetAllHouses() throws Exception {
 
         List<House> houseRepoList = new ArrayList<>(Arrays.asList(house1, house2, house3));
 
@@ -62,18 +83,7 @@ public class HouseControllerTest {
     
     @Test
     void testGetHouseById() throws Exception {
-        House house1 = new House();
-        house1.setId(1L);
-        house1.setHousename("Stark");
 
-        House house2 = new House();
-        house2.setId(2L);
-        house2.setHousename("Lannister");
-
-        House house3 = new House();
-        house3.setId(3L);
-        house3.setHousename("Baratheon");
-        
         Mockito.when(houseRespository.findById(1L)).thenReturn(Optional.of(house1));
         Mockito.when(houseRespository.findById(2L)).thenReturn(Optional.of(house2));
         Mockito.when(houseRespository.findById(3L)).thenReturn(Optional.of(house3));
