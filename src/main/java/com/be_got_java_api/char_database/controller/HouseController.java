@@ -29,4 +29,9 @@ public class HouseController {
         return houseRespository.findById(id)
         .orElseThrow(() -> new HouseNotFoundException(id)); 
     }
+
+    @PostMapping("/house")
+    House newHouse(@RequestBody House newHouse) {
+        return houseRespository.save(newHouse);
+    }
 }
