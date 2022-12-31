@@ -30,10 +30,6 @@ public class House {
         this.housename = housename;
     }
 
-    // Constructor function
-    public House(Long id, String housename) {
-        this.id = id;
-        this.housename = housename;
+    public House() {
     }
-
 }
