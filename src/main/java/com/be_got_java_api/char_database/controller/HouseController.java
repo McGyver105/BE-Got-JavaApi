@@ -3,6 +3,7 @@ package com.be_got_java_api.char_database.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,5 +34,14 @@ public class HouseController {
     @PostMapping("/house")
     House newHouse(@RequestBody House newHouse) {
         return houseRespository.save(newHouse);
+    }
+
+    @DeleteMapping("/house/{id}")
+    String deleteHouse(@PathVariable Long id) {
+        if(!houseRespository.existsById(id)) {
+            throw new HouseNotFoundException(id);
+        }
+        houseRespository.deleteById(id);
+        return "House " + id + "deleted";
     }
 }
