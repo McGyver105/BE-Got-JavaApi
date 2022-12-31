@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 
 @Entity
 public class House {
+
     @Id
     @GeneratedValue
     private Long id;
@@ -14,6 +15,7 @@ public class House {
     @Column(name = "housename", unique = true, nullable = false)
     private String housename;
 
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -28,5 +30,10 @@ public class House {
         this.housename = housename;
     }
 
+    // Constructor function
+    public House(Long id, String housename) {
+        this.id = id;
+        this.housename = housename;
+    }
 
 }
