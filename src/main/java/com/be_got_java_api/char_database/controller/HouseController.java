@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.be_got_java_api.char_database.exception.HouseAlreadyExistsException;
 import com.be_got_java_api.char_database.exception.HouseNotFoundException;
 import com.be_got_java_api.char_database.model.House;
 import com.be_got_java_api.char_database.repository.HouseRespository;
@@ -33,6 +34,10 @@ public class HouseController {
 
     @PostMapping("/house")
     House newHouse(@RequestBody House newHouse) {
+        String newHouseName = newHouse.getHousename();
+        if( houseRespository.existsByHousename(newHouseName)){
+            throw new HouseAlreadyExistsException(newHouseName);
+        }
         return houseRespository.save(newHouse);
     }
 
@@ -42,6 +47,6 @@ public class HouseController {
             throw new HouseNotFoundException(id);
         }
         houseRespository.deleteById(id);
-        return "House " + id + "deleted";
+        return "House " + id + " deleted";
     }
 }

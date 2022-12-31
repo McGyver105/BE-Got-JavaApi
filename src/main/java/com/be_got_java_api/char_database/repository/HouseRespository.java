@@ -6,4 +6,5 @@ import com.be_got_java_api.char_database.model.House;
 
 public interface HouseRespository extends JpaRepository<House, Long> {
 
+    Boolean existsByHousename(String housename);
 }
