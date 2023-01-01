@@ -3,6 +3,7 @@ package com.be_got_java_api.char_database.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
@@ -157,10 +158,25 @@ public class HouseControllerTest {
         Mockito.when(houseRespository.existsById(anyLong())).thenReturn(true);
 
         mockMvc.perform(MockMvcRequestBuilders
-            .delete("/house/1")
+            .delete("/house/" + house1.getId())
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.status().isOk());
 
         verify(houseRespository).deleteById(anyLong());
+    }
+
+    @Test
+    void testDeleteHouseExpection() throws Exception {
+
+        Mockito.when(houseRespository.existsById(anyLong())).thenReturn(false);
+
+        mockMvc.perform(MockMvcRequestBuilders
+            .delete("/house/" + house1.getId())
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.status().isNotFound())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage", 
+                        Matchers.is("Could not find House with id " + house1.getId())));
+
+        verify(houseRespository, never()).deleteById(anyLong());
     }
 }
