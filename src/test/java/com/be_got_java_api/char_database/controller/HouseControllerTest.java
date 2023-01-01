@@ -1,6 +1,9 @@
 package com.be_got_java_api.char_database.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,9 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -80,8 +81,8 @@ public class HouseControllerTest {
             .get("/houses")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(3)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].housename", Matchers.equalToIgnoringCase("Stark")));
+            .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(houseRepoList.size())))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].housename", Matchers.equalToIgnoringCase(house1.getHousename())));
     }
     
     @Test
@@ -95,22 +96,22 @@ public class HouseControllerTest {
             .get("/house/1")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(1)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.housename", Matchers.is("Stark")));
+            .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(house1.getId().intValue())))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.housename", Matchers.is(house1.getHousename())));
 
         mockMvc.perform(MockMvcRequestBuilders
             .get("/house/2")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(2)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.housename", Matchers.is("Lannister")));
+            .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(house2.getId().intValue())))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.housename", Matchers.is(house2.getHousename())));
 
         mockMvc.perform(MockMvcRequestBuilders
             .get("/house/3")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(3)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.housename", Matchers.is("Baratheon")));
+            .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(house3.getId().intValue())))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.housename", Matchers.is(house3.getHousename())));
 
         mockMvc.perform(MockMvcRequestBuilders
             .get("/house/4")
@@ -121,30 +122,25 @@ public class HouseControllerTest {
     @Test
     void testNewHouse() throws Exception {
         
-        House newHouse4 = new House();
-        newHouse4.setId(4L);
-        newHouse4.setHousename("Lorne");
-        String contentAsJson = objectMapper.writeValueAsString(newHouse4);
+        String contentAsJson = objectMapper.writeValueAsString(house1);
 
-        Mockito.when(houseRespository.save(Mockito.any(House.class))).thenReturn(newHouse4);
+        Mockito.when(houseRespository.save(Mockito.any(House.class))).thenReturn(house1);
 
         mockMvc.perform(MockMvcRequestBuilders
             .post("/house")
             .content(contentAsJson)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(4)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.housename", Matchers.is("Lorne")));
+            .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(house1.getId().intValue())))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.housename", Matchers.is(house1.getHousename())));
     }
 
     @Test
     void testPostHouseExceptionHandling() throws Exception {
-        House newHouse4 = new House();
-        newHouse4.setId(4L);
-        newHouse4.setHousename("Lorne");
-        String contentAsJson = objectMapper.writeValueAsString(newHouse4);
 
-        doThrow(new HouseAlreadyExistsException(newHouse4.getHousename()))
+        String contentAsJson = objectMapper.writeValueAsString(house1);
+
+        doThrow(new HouseAlreadyExistsException(house1.getHousename()))
             .when(houseRespository).save(Mockito.any(House.class));
 
         mockMvc.perform(MockMvcRequestBuilders
@@ -152,11 +148,19 @@ public class HouseControllerTest {
             .content(contentAsJson)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.status().isNotAcceptable())
-            .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage", Matchers.is("House " + newHouse4.getHousename() + " already exists")));
+            .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage", Matchers.is("House " + house1.getHousename() + " already exists")));
     }
 
     @Test
-    void testDeleteHouse() {
+    void testDeleteHouse() throws Exception {
 
+        Mockito.when(houseRespository.existsById(anyLong())).thenReturn(true);
+
+        mockMvc.perform(MockMvcRequestBuilders
+            .delete("/house/1")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.status().isOk());
+
+        verify(houseRespository).deleteById(anyLong());
     }
 }
