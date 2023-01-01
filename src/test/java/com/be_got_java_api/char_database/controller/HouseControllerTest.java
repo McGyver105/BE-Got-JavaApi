@@ -116,8 +116,24 @@ public class HouseControllerTest {
         }
     
     @Test
-    void testNewHouse() {
+    void testNewHouse() throws Exception {
         
+        House newHouse4 = new House();
+        newHouse4.setId(4L);
+        newHouse4.setHousename("Lorne");
+        String contentAsJson = objectMapper.writeValueAsString(newHouse4);
+
+        Mockito.when(houseRespository.save(Mockito.any(House.class))).thenReturn(newHouse4);
+
+        mockMvc.perform(MockMvcRequestBuilders
+            .post("/house")
+            .content(contentAsJson)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(4)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.housename", Matchers.is("Lorne")));
+
+        // Mockito.when(houseRespository.save(Mockito.any(House.class))).thenThrow(houseAlreadyExistsException);
     }
 
     @Test
