@@ -1,5 +1,7 @@
 package com.be_got_java_api.char_database.controller;
 
+import static org.mockito.Mockito.doThrow;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import com.be_got_java_api.char_database.exception.HouseAlreadyExistsException;
 import com.be_got_java_api.char_database.model.House;
 import com.be_got_java_api.char_database.repository.HouseRespository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -132,8 +135,24 @@ public class HouseControllerTest {
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(4)))
             .andExpect(MockMvcResultMatchers.jsonPath("$.housename", Matchers.is("Lorne")));
+    }
 
-        // Mockito.when(houseRespository.save(Mockito.any(House.class))).thenThrow(houseAlreadyExistsException);
+    @Test
+    void testPostHouseExceptionHandling() throws Exception {
+        House newHouse4 = new House();
+        newHouse4.setId(4L);
+        newHouse4.setHousename("Lorne");
+        String contentAsJson = objectMapper.writeValueAsString(newHouse4);
+
+        doThrow(new HouseAlreadyExistsException(newHouse4.getHousename()))
+            .when(houseRespository).save(Mockito.any(House.class));
+
+        mockMvc.perform(MockMvcRequestBuilders
+            .post("/house")
+            .content(contentAsJson)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.status().isNotAcceptable())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage", Matchers.is("House " + newHouse4.getHousename() + " already exists")));
     }
 
     @Test
