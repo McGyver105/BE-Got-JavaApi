@@ -1,8 +1,5 @@
 package com.be_got_java_api.char_database.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
