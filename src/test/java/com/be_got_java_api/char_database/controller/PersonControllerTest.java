@@ -1,8 +1,12 @@
 package com.be_got_java_api.char_database.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
@@ -51,7 +55,7 @@ public class PersonControllerTest {
         person2.setDead(false);
         person2.setReligion("The Old Gods");
 
-        person3.setId(1L);
+        person3.setId(3L);
         person3.setPersonName("Alex");
         person3.setDead(false);
         person3.setReligion("The Drowned Man");
@@ -89,4 +93,24 @@ public class PersonControllerTest {
             .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(personRepoList.size())))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].religion", Matchers.is(person1.getReligion())));
     }
+
+    @Test
+    public void testGetPersonById() throws Exception {
+
+        Mockito.when(personRespository.findById(person1.getId())).thenReturn(Optional.of(person1));
+        Mockito.when(personRespository.findById(person2.getId())).thenReturn(Optional.of(person2));
+        Mockito.when(personRespository.findById(person3.getId())).thenReturn(Optional.of(person3));
+
+        mockMvc.perform(MockMvcRequestBuilders
+            .get("/person/1")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(person1.getId().intValue())))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.personName", Matchers.is(person1.getPersonName())));
+
+        mockMvc.perform(MockMvcRequestBuilders
+            .get("/person/4")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.status().isNotFound());
+        }
 }
