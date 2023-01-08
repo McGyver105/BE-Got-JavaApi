@@ -6,6 +6,7 @@ import jakarta.persistence.Id;
 
 @Entity
 public class Person {
+
     @Id
     @GeneratedValue
     private Long id;
@@ -31,5 +32,7 @@ public class Person {
         this.religion = religion;
     }
 
-
+    public Person() {
     }
+
+}
