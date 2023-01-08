@@ -10,6 +10,7 @@ public class Person {
     @Id
     @GeneratedValue
     private Long id;
+    private String personName;
     private Boolean dead;
     private String religion;
 
@@ -18,6 +19,12 @@ public class Person {
     }
     public void setId(Long id) {
         this.id = id;
+    }
+    public String getPersonName() {
+        return personName;
+    }
+    public void setPersonName(String personName) {
+        this.personName = personName;
     }
     public Boolean getDead() {
         return dead;

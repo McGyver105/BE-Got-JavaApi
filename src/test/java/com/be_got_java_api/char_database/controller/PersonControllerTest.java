@@ -42,31 +42,37 @@ public class PersonControllerTest {
     @BeforeEach
     void personSetup() {
         person1.setId(1L);
+        person1.setPersonName("John");
         person1.setDead(false);
         person1.setReligion("The Seven");
 
-        person1.setId(2L);
-        person1.setDead(false);
-        person1.setReligion("The Old Gods");
+        person2.setId(2L);
+        person2.setPersonName("Dan");
+        person2.setDead(false);
+        person2.setReligion("The Old Gods");
 
-        person1.setId(1L);
-        person1.setDead(false);
-        person1.setReligion("The Drowned Man");
+        person3.setId(1L);
+        person3.setPersonName("Alex");
+        person3.setDead(false);
+        person3.setReligion("The Drowned Man");
     }
 
     @AfterEach
     void personTeardown() {
         person1.setId(null);
+        person1.setPersonName(null);
         person1.setDead(null);
         person1.setReligion(null);
 
-        person1.setId(null);
-        person1.setDead(null);
-        person1.setReligion(null);
+        person2.setId(null);
+        person2.setPersonName(null);
+        person2.setDead(null);
+        person2.setReligion(null);
 
-        person1.setId(null);
-        person1.setDead(null);
-        person1.setReligion(null);
+        person3.setId(null);
+        person3.setPersonName(null);
+        person3.setDead(null);
+        person3.setReligion(null);
     }
 
     @Test
