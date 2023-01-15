@@ -110,4 +110,23 @@ public class PersonControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.status().isNotFound());
         }
-}
+    
+    @Test
+    void testPostNewPerson() throws Exception {
+
+        String contentAsJson = objectMapper.writeValueAsString(person1);
+
+        Mockito.when(personRespository.save(Mockito.any(Person.class))).thenReturn(person1);
+
+        mockMvc.perform(MockMvcRequestBuilders
+            .post("/person")
+            .content(contentAsJson)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.personName", Matchers.is(person1.getPersonName())))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(person1.getId().intValue())));
+
+    }
+
+
+    }
