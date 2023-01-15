@@ -34,7 +34,7 @@ public class PersonController {
     @PostMapping("/person")
     Person newPerson(@RequestBody Person newPerson) {
         String newPersonName = newPerson.getPersonName();
-        if( personRespository.personExistsByPersonName(newPersonName)){
+        if( personRespository.existsByPersonName(newPersonName)){
             throw new PersonAlreadyExistsException(newPersonName);
         }
         return personRespository.save(newPerson);

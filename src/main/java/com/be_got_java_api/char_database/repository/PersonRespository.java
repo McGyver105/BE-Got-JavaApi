@@ -6,5 +6,5 @@ import com.be_got_java_api.char_database.model.Person;
 
 public interface PersonRespository extends JpaRepository<Person, Long> {
     
-    Boolean personExistsByPersonName(String personName);
+    Boolean existsByPersonName(String personName);
 }
