@@ -1,9 +1,13 @@
 package com.be_got_java_api.char_database.controller;
 
+import static org.mockito.Mockito.doThrow;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+import javax.print.attribute.standard.Media;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
@@ -19,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import com.be_got_java_api.char_database.exception.PersonAlreadyExistsException;
 import com.be_got_java_api.char_database.model.Person;
 import com.be_got_java_api.char_database.repository.PersonRespository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -125,8 +130,21 @@ public class PersonControllerTest {
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.jsonPath("$.personName", Matchers.is(person1.getPersonName())))
             .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(person1.getId().intValue())));
-
     }
 
+    @Test
+    void testPostPersonExceptionHandling() throws Exception {
 
+        String contentAsJson = objectMapper.writeValueAsString(person1);
+
+        doThrow(new PersonAlreadyExistsException(person1.getPersonName()))
+            .when(personRespository).save(Mockito.any(Person.class));
+
+        mockMvc.perform(MockMvcRequestBuilders
+            .post("/person")
+            .content(contentAsJson)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.status().isNotAcceptable())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage", Matchers.is("Person " + person1.getPersonName() + " already exists")));
     }
+}
